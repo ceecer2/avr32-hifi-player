@@ -86,6 +86,10 @@
 //#define RT_DFS_ELM_WORD_ACCESS
 #define RT_DFS_ELM_DRIVES			2
 
+/* SECTION: Long File Name support */
+#define RT_DFS_ELM_USE_LFN			2
+#define RT_DFS_ELM_MAX_LFN			255
+
 /* SECTION: DFS options */
 /* the max number of mounted filesystem */
 #define DFS_FILESYSTEMS_MAX			2

@@ -43,10 +43,10 @@ static rt_err_t sd_mmc_close(rt_device_t dev)
 
 static rt_size_t sd_mmc_read(rt_device_t dev, rt_off_t pos, void *buffer, rt_size_t size)
 {
-	rt_uint32_t sector_count = size >> 9;
-	rt_uint32_t sector = sd_mmc_partition.offset + (pos >> 9);
+	rt_uint32_t count = size;
+	rt_uint32_t sector = sd_mmc_partition.offset + pos;
 
-	while (sector_count)
+	while (count)
 	{
 		if (sd_mmc_spi_read_open_PDCA(sector))
 		{
@@ -65,7 +65,7 @@ static rt_size_t sd_mmc_read(rt_device_t dev, rt_off_t pos, void *buffer, rt_siz
 			pdca_channel_rx->cr = AVR32_PDCA_TDIS_MASK;
 			pdca_channel_tx->cr = AVR32_PDCA_TDIS_MASK;
 
-			sector_count--;
+			count--;
 			buffer += MMC_SECTOR_SIZE;
 		}
 		else
@@ -75,21 +75,21 @@ static rt_size_t sd_mmc_read(rt_device_t dev, rt_off_t pos, void *buffer, rt_siz
 		}
 	}
 
-	return size >> 9 << 9;
+	return size;
 }
 
-static rt_size_t sd_mmc_write (rt_device_t dev, rt_off_t pos, const void* buffer, rt_size_t size)
+static rt_size_t sd_mmc_write(rt_device_t dev, rt_off_t pos, const void* buffer, rt_size_t size)
 {
-	rt_uint32_t sector_count = size >> 9;
-	rt_uint32_t sector = sd_mmc_partition.offset + (pos >> 9);
+	rt_uint32_t count = size;
+	rt_uint32_t sector = sd_mmc_partition.offset + pos;
 
 	if (sd_mmc_spi_write_open(sector))
 	{
-		while (sector_count)
+		while (count)
 		{
 			if (sd_mmc_spi_write_sector_from_ram(buffer))
 			{
-				sector_count--;
+				count--;
 				buffer += MMC_SECTOR_SIZE;
 			}
 			else
@@ -107,7 +107,7 @@ static rt_size_t sd_mmc_write (rt_device_t dev, rt_off_t pos, const void* buffer
 		return 0;
 	}
 
-	return size >> 9 << 9;
+	return size;
 }
 
 static rt_err_t sd_mmc_control(rt_device_t dev, rt_uint8_t cmd, void *args)
@@ -117,6 +117,7 @@ static rt_err_t sd_mmc_control(rt_device_t dev, rt_uint8_t cmd, void *args)
 
 static struct rt_device sd_mmc_device =
 {
+	.type		= RT_Device_Class_Block,
 	.init		= sd_mmc_init,
 	.open		= sd_mmc_open,
 	.close		= sd_mmc_close,
