@@ -3,6 +3,8 @@
  *
  *  Created on: 2010-4-22
  *      Author: Kyle
+ *
+ * $Id$
  */
 
 #include <compiler.h>
@@ -18,6 +20,7 @@
 #include "../drivers/console/usart_console.h"
 #include "../drivers/lcd/ssd1283a.h"
 #include "../drivers/sd_mmc/sd_mmc.h"
+#include "utils.h"
 
 #include "ui/player_ui.h"
 
@@ -34,6 +37,7 @@ void player_init_thread(void *p)
 	if (dfs_mount("sd0", "/", "elm", 0, 0) != 0)
 		rt_kprintf("Unable to mount sd0 as /.\n");
 
+	ff_convert_init();
 	rtgui_system_server_init();
 	player_ui_init();
 }
