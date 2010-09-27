@@ -5,6 +5,7 @@
  *      Author: Kyle
  */
 
+#include "compiler.h"
 #include <rtthread.h>
 #include <dfs_posix.h>
 #include "utils.h"
@@ -38,7 +39,7 @@ rt_uint16_t ff_convert(rt_uint16_t src, rt_uint32_t dir)
 			if (read(fd, (char *) &c, 2) != 2)
 				return 0;
 
-			return c;
+			return swap16(c);
 		}
 		else
 		{
